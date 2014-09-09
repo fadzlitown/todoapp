@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import java.util.ArrayList;
 
+import my.i906.todolist.adapter.TodoAdapter;
 import my.i906.todolist.model.Todo;
 
 public class TodoListFragment extends ListFragment {
@@ -12,8 +13,10 @@ public class TodoListFragment extends ListFragment {
     public TodoListFragment() { }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        TodoAdapter adapter = new TodoAdapter(getActivity(), getSampleTodoItems());
+        setListAdapter(adapter);
     }
 
     private ArrayList<Todo> getSampleTodoItems() {
@@ -31,9 +34,9 @@ public class TodoListFragment extends ListFragment {
         item2.description = "Some very long description here.";
 
         Todo item3 = new Todo();
-        item1.id = 3;
-        item1.title = "Third note";
-        item1.description = "Some very long description here.";
+        item3.id = 3;
+        item3.title = "Third note";
+        item3.description = "Some very long description here.";
 
         list.add(item1);
         list.add(item2);
