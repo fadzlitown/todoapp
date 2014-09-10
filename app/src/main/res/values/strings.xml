@@ -2,8 +2,10 @@
 <resources>
 
     <string name="app_name">TodoList</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+
+    <!-- MainActivity -->
+
+    <string name="action_new_item">New Item</string>
 
     <!-- TodoEditFragment -->
 
