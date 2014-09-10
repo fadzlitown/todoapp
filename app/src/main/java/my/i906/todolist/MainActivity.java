@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,10 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 
+import my.i906.todolist.fragment.TodoEditFragment;
 import my.i906.todolist.fragment.TodoListFragment;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements TodoListFragment.Callbacks {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +27,22 @@ public class MainActivity extends Activity {
                     .add(R.id.container, new TodoListFragment())
                     .commit();
         }
+    }
+
+    @Override
+    public void onItemSelected(long id) {
+        showEditFragment(id);
+    }
+
+    private void showEditFragment(long id) {
+        Fragment tef = TodoEditFragment.newInstance(id);
+
+        getFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
+                .replace(R.id.container, tef, "FRAG_TODO_EDIT")
+                .addToBackStack("FRAG_TODO_EDIT")
+                .commit();
     }
 
     @Override
