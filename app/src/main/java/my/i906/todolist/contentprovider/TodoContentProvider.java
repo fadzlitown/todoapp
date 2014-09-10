@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -83,7 +84,30 @@ public class TodoContentProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        throw new UnsupportedOperationException("Not yet implemented");
+
+        SQLiteDatabase db = mDatabase.getWritableDatabase();
+
+        int rowsUpdated = 0;
+        int uriType = sURIMatcher.match(uri);
+
+        switch (uriType) {
+            case TODOS:
+                rowsUpdated = db.update(Todo.TABLE_TODO, values, selection, selectionArgs);
+                break;
+            case TODO_ID:
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsUpdated = db.update(Todo.TABLE_TODO, values, Todo.COLUMN_ID + "=" + id, null);
+                } else {
+                    rowsUpdated = db.update(Todo.TABLE_TODO, values, Todo.COLUMN_ID + "=" + id + " and " + selection, selectionArgs);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rowsUpdated;
     }
 
     private void checkColumns(String[] projection) {

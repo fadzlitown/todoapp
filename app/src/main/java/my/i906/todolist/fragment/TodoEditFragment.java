@@ -1,8 +1,10 @@
 package my.i906.todolist.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
@@ -15,6 +17,7 @@ import android.widget.EditText;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import my.i906.todolist.R;
 import my.i906.todolist.contentprovider.TodoContentProvider;
 import my.i906.todolist.model.Todo;
@@ -24,6 +27,8 @@ public class TodoEditFragment extends Fragment implements LoaderManager.LoaderCa
     private static final String ARG_TODO_ID = "todoId";
 
     private long mTodoId;
+    private Callbacks mCallbacks = sDummyCallbacks;
+    private Uri mItemUri;
 
     @InjectView(R.id.todoedit_title)
     protected EditText mTitleView;
@@ -52,6 +57,7 @@ public class TodoEditFragment extends Fragment implements LoaderManager.LoaderCa
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mTodoId = getArguments().getLong(ARG_TODO_ID);
+            mItemUri = ContentUris.withAppendedId(TodoContentProvider.CONTENT_URI, mTodoId);
         }
     }
 
@@ -62,10 +68,32 @@ public class TodoEditFragment extends Fragment implements LoaderManager.LoaderCa
         return view;
     }
 
+    @OnClick(R.id.action_save)
+    protected void onSaveButtonClicked() {
+
+        String title = mTitleView.getText().toString();
+        String description = mDescriptionView.getText().toString();
+
+        if (title.length() == 0 && description.length() == 0) {
+            return;
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(Todo.COLUMN_TITLE, title);
+        values.put(Todo.COLUMN_DESCRIPTION, description);
+
+        getActivity().getContentResolver().update(mItemUri, values, null, null);
+        mCallbacks.onItemSaved(mTodoId);
+    }
+
+    @OnClick(R.id.action_discard)
+    protected void onDiscardButtonClicked() {
+
+    }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri item = ContentUris.withAppendedId(TodoContentProvider.CONTENT_URI, mTodoId);
-        CursorLoader loader = new CursorLoader(this.getActivity(), item, null, null, null, null);
+        CursorLoader loader = new CursorLoader(this.getActivity(), mItemUri, null, null, null, null);
         return loader;
     }
 
@@ -85,6 +113,36 @@ public class TodoEditFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (!(activity instanceof Callbacks)) {
+            throw new IllegalStateException("Activity must implement fragment's callbacks.");
+        }
+
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = sDummyCallbacks;
+    }
+
+    private static Callbacks sDummyCallbacks = new Callbacks() {
+        @Override
+        public void onItemSaved(long id) { }
+
+        @Override
+        public void onItemDiscarded(long id) { }
+    };
+
+    public interface Callbacks {
+        public void onItemSaved(long id);
+        public void onItemDiscarded(long id);
     }
 
     @Override

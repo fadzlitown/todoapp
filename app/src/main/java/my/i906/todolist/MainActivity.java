@@ -16,7 +16,7 @@ import my.i906.todolist.fragment.TodoEditFragment;
 import my.i906.todolist.fragment.TodoListFragment;
 
 
-public class MainActivity extends Activity implements TodoListFragment.Callbacks {
+public class MainActivity extends Activity implements TodoListFragment.Callbacks, TodoEditFragment.Callbacks {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +34,14 @@ public class MainActivity extends Activity implements TodoListFragment.Callbacks
         showEditFragment(id);
     }
 
+    @Override
+    public void onItemSaved(long id) {
+        showListFragment();
+    }
+
+    @Override
+    public void onItemDiscarded(long id) { }
+
     private void showEditFragment(long id) {
         Fragment tef = TodoEditFragment.newInstance(id);
 
@@ -42,6 +50,14 @@ public class MainActivity extends Activity implements TodoListFragment.Callbacks
                 .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                 .replace(R.id.container, tef, "FRAG_TODO_EDIT")
                 .addToBackStack("FRAG_TODO_EDIT")
+                .commit();
+    }
+
+    private void showListFragment() {
+        getFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
+                .replace(R.id.container, new TodoListFragment(), "FRAG_TODO_LIST")
                 .commit();
     }
 
