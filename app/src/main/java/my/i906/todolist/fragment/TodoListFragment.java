@@ -1,48 +1,62 @@
 package my.i906.todolist.fragment;
 
 import android.app.ListFragment;
+import android.app.LoaderManager;
+import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 
 import java.util.ArrayList;
 
+import my.i906.todolist.R;
 import my.i906.todolist.adapter.TodoAdapter;
+import my.i906.todolist.contentprovider.TodoContentProvider;
 import my.i906.todolist.model.Todo;
 
-public class TodoListFragment extends ListFragment {
+public class TodoListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private TodoAdapter mAdapter;
 
     public TodoListFragment() { }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        TodoAdapter adapter = new TodoAdapter(getActivity(), getSampleTodoItems());
-        setListAdapter(adapter);
+        fillData();
     }
 
-    private ArrayList<Todo> getSampleTodoItems() {
+    private void fillData() {
+        String[] from = {Todo.COLUMN_TITLE, Todo.COLUMN_DESCRIPTION};
+        int[] to = {R.id.row_title, R.id.row_description};
 
-        ArrayList<Todo> list = new ArrayList<Todo>();
+        mAdapter = new TodoAdapter(getActivity(), null, from, to, 0);
+        setListAdapter(mAdapter);
+        getLoaderManager().initLoader(0, null, this);
+    }
 
-        Todo item1 = new Todo();
-        item1.id = 1;
-        item1.title = "First note";
-        item1.description = "Some very long description here.";
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String[] projection = {
+                Todo.COLUMN_ID,
+                Todo.COLUMN_TITLE,
+                Todo.COLUMN_DESCRIPTION
+        };
 
-        Todo item2 = new Todo();
-        item2.id = 2;
-        item2.title = "Second note";
-        item2.description = "Some very long description here.";
+        CursorLoader cursorLoader = new CursorLoader(getActivity(), TodoContentProvider.CONTENT_URI, projection, null, null, null);
+        return cursorLoader;
+    }
 
-        Todo item3 = new Todo();
-        item3.id = 3;
-        item3.title = "Third note";
-        item3.description = "Some very long description here.";
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mAdapter.swapCursor(data);
+    }
 
-        list.add(item1);
-        list.add(item2);
-        list.add(item3);
-
-        return list;
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
     }
 
 }
