@@ -30,6 +30,11 @@ public class MainActivity extends Activity implements TodoListFragment.Callbacks
     }
 
     @Override
+    public void onNewItemButtonClicked() {
+        showEditFragment(-1);
+    }
+
+    @Override
     public void onItemSelected(long id) {
         showEditFragment(id);
     }
@@ -59,25 +64,6 @@ public class MainActivity extends Activity implements TodoListFragment.Callbacks
                 .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                 .replace(R.id.container, new TodoListFragment(), "FRAG_TODO_LIST")
                 .commit();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 }

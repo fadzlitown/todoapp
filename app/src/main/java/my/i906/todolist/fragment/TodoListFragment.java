@@ -9,6 +9,9 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -26,6 +29,12 @@ public class TodoListFragment extends ListFragment implements LoaderManager.Load
     private Callbacks mCallbacks = sDummyCallbacks;
 
     public TodoListFragment() { }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -86,14 +95,31 @@ public class TodoListFragment extends ListFragment implements LoaderManager.Load
         mAdapter.swapCursor(null);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.action_new_item) {
+            mCallbacks.onNewItemButtonClicked();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(long id) {
-        }
+        public void onItemSelected(long id) { }
+        public void onNewItemButtonClicked() { }
     };
 
     public interface Callbacks {
         public void onItemSelected(long id);
+        public void onNewItemButtonClicked();
     }
 
 }
