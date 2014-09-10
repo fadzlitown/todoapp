@@ -37,7 +37,29 @@ public class TodoContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        throw new UnsupportedOperationException("Not yet implemented");
+
+        SQLiteDatabase db = mDatabase.getWritableDatabase();
+
+        int rowsDeleted = 0;
+        int uriType = sURIMatcher.match(uri);
+        switch (uriType) {
+            case TODOS:
+                rowsDeleted = db.delete(Todo.TABLE_TODO, selection, selectionArgs);
+                break;
+            case TODO_ID:
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsDeleted = db.delete(Todo.TABLE_TODO, Todo.COLUMN_ID + "=" + id, null);
+                } else {
+                    rowsDeleted = db.delete(Todo.TABLE_TODO, Todo.COLUMN_ID + "=" + id + " and " + selection, selectionArgs);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rowsDeleted;
     }
 
     @Override

@@ -45,7 +45,9 @@ public class MainActivity extends Activity implements TodoListFragment.Callbacks
     }
 
     @Override
-    public void onItemDiscarded(long id) { }
+    public void onItemDiscarded(long id) {
+        showListFragment();
+    }
 
     private void showEditFragment(long id) {
         Fragment tef = TodoEditFragment.newInstance(id);

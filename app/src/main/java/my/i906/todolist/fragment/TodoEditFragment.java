@@ -100,7 +100,11 @@ public class TodoEditFragment extends Fragment implements LoaderManager.LoaderCa
 
     @OnClick(R.id.action_discard)
     protected void onDiscardButtonClicked() {
+        if (mTodoId != -1) {
+            getActivity().getContentResolver().delete(mItemUri, null, null);
+        }
 
+        mCallbacks.onItemDiscarded(mTodoId);
     }
 
     @Override
