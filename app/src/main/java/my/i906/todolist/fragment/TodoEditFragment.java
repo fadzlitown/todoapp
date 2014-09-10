@@ -39,7 +39,6 @@ public class TodoEditFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(1, null, this);
     }
 
     public static TodoEditFragment newInstance(long id) {
@@ -55,9 +54,16 @@ public class TodoEditFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(false);
+        setMenuVisibility(false);
+
         if (getArguments() != null) {
             mTodoId = getArguments().getLong(ARG_TODO_ID);
-            mItemUri = ContentUris.withAppendedId(TodoContentProvider.CONTENT_URI, mTodoId);
+
+            if (mTodoId != -1) {
+                mItemUri = ContentUris.withAppendedId(TodoContentProvider.CONTENT_URI, mTodoId);
+                getLoaderManager().initLoader(1, null, this);
+            }
         }
     }
 
@@ -82,7 +88,13 @@ public class TodoEditFragment extends Fragment implements LoaderManager.LoaderCa
         values.put(Todo.COLUMN_TITLE, title);
         values.put(Todo.COLUMN_DESCRIPTION, description);
 
-        getActivity().getContentResolver().update(mItemUri, values, null, null);
+        if (mTodoId != -1) {
+            getActivity().getContentResolver().update(mItemUri, values, null, null);
+        } else {
+            Uri newUri = getActivity().getContentResolver().insert(TodoContentProvider.CONTENT_URI, values);
+            mTodoId = ContentUris.parseId(newUri);
+        }
+
         mCallbacks.onItemSaved(mTodoId);
     }
 

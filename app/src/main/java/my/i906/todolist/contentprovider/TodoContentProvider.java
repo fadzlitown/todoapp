@@ -47,7 +47,21 @@ public class TodoContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        throw new UnsupportedOperationException("Not yet implemented");
+
+        SQLiteDatabase db = mDatabase.getWritableDatabase();
+        long id;
+
+        int uriType = sURIMatcher.match(uri);
+        switch (uriType) {
+            case TODOS:
+                id = db.insert(Todo.TABLE_TODO, null, values);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null);
+        return Uri.parse(BASE_PATH + "/" + id);
     }
 
     @Override
