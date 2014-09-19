@@ -35,7 +35,7 @@ public class TodoEditFragment extends Fragment implements LoaderManager.LoaderCa
 
     @InjectView(R.id.todoedit_description)
     protected EditText mDescriptionView;
-
+// new comment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
