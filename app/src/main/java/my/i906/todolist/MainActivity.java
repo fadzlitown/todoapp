@@ -11,12 +11,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.content.Intent;
+//import android.widget.
 
 import my.i906.todolist.fragment.TodoEditFragment;
 import my.i906.todolist.fragment.TodoListFragment;
 
 
 public class MainActivity extends Activity implements TodoListFragment.Callbacks, TodoEditFragment.Callbacks {
+
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_main);
+//    }
+
+//    public void activity2(View view){
+//        Intent intent = new Intent(this,com.example.test.MainActivity2.class);
+//        startActivity(intent);
+//    }
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
